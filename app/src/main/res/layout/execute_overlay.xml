@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="4dp"
+    android:background="@android:color/transparent"
+    android:elevation="8dp"
+    android:gravity="center"
+    android:layout_gravity="start">
+
+    <FrameLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <ImageButton
+            android:id="@+id/play_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:layout_marginBottom="4dp"
+            android:contentDescription="execute the gesture"
+            android:src="@drawable/play"/>
+
+
+        <!-- <ImageButton
+             android:id="@+id/pause_button"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:background="@android:color/transparent"
+             android:visibility="gone"
+             android:layout_marginBottom="4dp"
+             android:contentDescription="execute the gesture"
+             android:src="@drawable/pause"/>-->
+
+    </FrameLayout>
+
+
+    <ImageButton
+        android:id="@+id/cancel_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp"
+        android:contentDescription="discard the gesture"
+        android:background="@android:color/transparent"
+        android:src="@drawable/cross"/>
+
+</LinearLayout>

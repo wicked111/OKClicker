@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">OKclicker</string>
+    <string name="accessibility_service_description">This service allows OKclicker to perform automated clicks and interact with other apps on your behalf.</string>
+</resources>

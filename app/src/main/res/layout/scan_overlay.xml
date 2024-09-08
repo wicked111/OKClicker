@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="4dp"
+    android:background="@android:color/transparent"
+    android:elevation="8dp"
+    android:gravity="center"
+    android:layout_gravity="start">
+
+    <ImageButton
+        android:id="@+id/save_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:layout_marginBottom="4dp"
+        android:contentDescription="save click point"
+        android:src="@drawable/save"/>
+
+    <ImageButton
+        android:id="@+id/discard_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp"
+        android:contentDescription="discard click point"
+        android:background="@android:color/transparent"
+        android:src="@drawable/cross"/>
+
+
+    <ImageButton
+        android:id="@+id/dragging_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="drag the floating view"
+        android:background="@android:color/transparent"
+        android:src="@drawable/drag"/>
+
+</LinearLayout>
