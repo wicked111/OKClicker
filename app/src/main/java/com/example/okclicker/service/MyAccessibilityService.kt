@@ -18,13 +18,14 @@ import android.view.LayoutInflater
 import android.widget.ImageButton
 import com.example.okclicker.EventActivity
 import com.example.okclicker.R
+import kotlin.random.Random
 
 class MyAccessibilityService : AccessibilityService() {
 
     private var clickCoordinates: Pair<Int, Int>? = null
     private var overlayView: View? = null
     private var floatingWindow: View? = null
-    private var clickHandler: Handler? = null
+    private val clickHandler = Handler(Looper.getMainLooper())
     private var clickRunnable: Runnable? = null
 
     companion object {
@@ -40,6 +41,7 @@ class MyAccessibilityService : AccessibilityService() {
     }
 
     override fun onServiceConnected() {
+
         super.onServiceConnected()
         instance = this
         startActivity(Intent(this, EventActivity::class.java)
@@ -192,7 +194,7 @@ class MyAccessibilityService : AccessibilityService() {
         Log.d("performClick", "Gesture dispatched")
     }
 
-    fun startContinuousClicking(x: Int, y: Int, interval: Long) {
+   /* fun startContinuousClicking(x: Int, y: Int, interval: Long) {
         // Initialize the handler and runnable for continuous clicking
         clickHandler = Handler(Looper.getMainLooper())
         clickRunnable = object : Runnable {
@@ -202,16 +204,14 @@ class MyAccessibilityService : AccessibilityService() {
             }
         }
         clickHandler?.post(clickRunnable!!) // Start the first click immediately
-    }
+    }*/
 
     fun stopContinuousClicking() {
-        // Remove the clickRunnable from the handler to stop the continuous clicking
-        clickRunnable?.let {
-            clickHandler?.removeCallbacks(it)
-        }
-        clickHandler = null
+        clickHandler.removeCallbacksAndMessages(null)
         clickRunnable = null
+        Log.d("StopClicking", "Continuous clicking has been stopped.")
     }
+
 
     private fun returnToApp() {
         val returnIntent = Intent(this, EventActivity::class.java).apply {
@@ -268,5 +268,38 @@ class MyAccessibilityService : AccessibilityService() {
 
     override fun onAccessibilityEvent(event: AccessibilityEvent?) {
         // Not used for this service, but must be overridden
+    }
+
+    fun startRandomClicking(x: Int, y: Int, totalDurationMs: Long, lowerDelay: Int, higherDelay: Int) {
+
+        var elapsedTime = 0L
+
+        // Start the clicking process
+         clickRunnable = object : Runnable {
+            override fun run() {
+                if (elapsedTime < totalDurationMs) {
+                    // Generate a random delay once
+                    val delay = randomClickDelaySelector(higherDelay, lowerDelay)
+
+                    // Perform the click
+                    performClick(x, y)
+
+                    // Increment the elapsed time using the same delay
+                    elapsedTime += delay.toLong()
+
+                    // Schedule the next click using the same delay
+                    clickHandler.postDelayed(this, delay.toLong())
+                } else {
+                    Log.d("Clicking", "Finished clicking for $totalDurationMs ms")
+                }
+            }
+        }
+
+        // Start the first click
+        clickHandler.post(clickRunnable!!)
+    }
+    fun randomClickDelaySelector(higherLimitInMs: Int, lowerLimitInMs: Int): Int {
+        require(higherLimitInMs > lowerLimitInMs) {"higherLimitInMs must be greater than lowerLimitInMs"}
+        return Random.nextInt(lowerLimitInMs, higherLimitInMs + 1)
     }
 }

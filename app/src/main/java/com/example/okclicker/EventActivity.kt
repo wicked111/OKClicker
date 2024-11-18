@@ -11,7 +11,6 @@ import android.provider.Settings
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
-import android.widget.Button
 import android.widget.ImageButton
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -21,6 +20,7 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.okclicker.databinding.ActivityEventBinding
 import com.example.okclicker.service.MyAccessibilityService
+import kotlin.random.Random
 
 class EventActivity : AppCompatActivity() {
 
@@ -36,6 +36,13 @@ class EventActivity : AppCompatActivity() {
 
          val scannerButton : AppCompatButton = binding.eventactivityScannner
          val executeButton : AppCompatButton = binding.eventactivitySavebutton
+         val eventName = binding.eventactivityEventname.text?.toString()
+         val higherLimitInMs = binding.eventactivityHigherlimitinms.text?.toString()
+         val lowerLimitInMs = binding.eventactivityLowerlimitinms.text?.toString()
+         val fixedDurationInMs = binding.eventactivityFixeddurationinms.text?.toString()
+
+
+
 
 
         // Adjust the insets for system bars
@@ -60,7 +67,52 @@ class EventActivity : AppCompatActivity() {
         }
 
 
+
         executeButton.setOnClickListener {
+            // Fetch the latest values of the input fields
+            val hourHigherLimitText = binding.eventactivityHourhigherlimit.text?.toString()
+            val hourLowerLimitText = binding.eventactivityHourlowerlimit.text?.toString()
+            val lowerLimitText = binding.eventactivityLowerlimitinms.text?.toString()
+            val higherLimitText = binding.eventactivityHigherlimitinms.text?.toString()
+
+            // Validate user input for hours
+            val randomTime = validateAndGenerateRandomHour(hourLowerLimitText, hourHigherLimitText, this)
+                ?: return@setOnClickListener
+
+            Log.d("Hour", "$randomTime")
+            val totalDurationInMs = randomTime * 60 * 60 * 1000L
+
+            // Validate and parse the millisecond limits
+            if (lowerLimitText.isNullOrBlank()) {
+                Toast.makeText(this, "Lower limit cannot be empty.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            val lowerLimitInMs = try {
+                lowerLimitText.trim().toInt()
+            } catch (e: NumberFormatException) {
+                Toast.makeText(this, "Invalid millisecond lower limit.", Toast.LENGTH_SHORT).show()
+                Log.e("Error", "Lower limit parsing failed", e)
+                return@setOnClickListener
+            }
+
+            if (higherLimitText.isNullOrBlank()) {
+                Toast.makeText(this, "Higher limit cannot be empty.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            val higherLimitInMs = try {
+                higherLimitText.trim().toInt()
+            } catch (e: NumberFormatException) {
+                Toast.makeText(this, "Invalid millisecond higher limit.", Toast.LENGTH_SHORT).show()
+                Log.e("Error", "Higher limit parsing failed", e)
+                return@setOnClickListener
+            }
+
+            if (lowerLimitInMs >= higherLimitInMs) {
+                Toast.makeText(this, "Lower limit must be less than upper limit.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
             // Open home screen again
             proceedToHomeScreen()
 
@@ -78,7 +130,7 @@ class EventActivity : AppCompatActivity() {
                         Log.d("Execute click", "${savedCoordinates?.first} ${savedCoordinates?.second}")
                         if (savedCoordinates != null) {
                             // Start continuous clicking with a specified interval (e.g., 2000ms)
-                            service.startContinuousClicking(savedCoordinates.first, savedCoordinates.second, 2000L)
+                            service.startRandomClicking(savedCoordinates.first, savedCoordinates.second, totalDurationInMs, lowerLimitInMs, higherLimitInMs)
                         } else {
                             Toast.makeText(this, "No saved coordinates found.", Toast.LENGTH_SHORT).show()
                         }
@@ -86,7 +138,7 @@ class EventActivity : AppCompatActivity() {
                         Toast.makeText(this, "Accessibility service is not initialized.", Toast.LENGTH_SHORT).show()
                         Log.d("Execute click", "Accessibility service is not initialized.")
                     }
-                }, 2000)
+                }, 0)
 
                 // Hide the play button after it's clicked
                 playButton.visibility = View.GONE
@@ -106,12 +158,6 @@ class EventActivity : AppCompatActivity() {
             }
         }
 
-
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        // Remove the overlay when the activity is destroyed
 
     }
 
@@ -166,4 +212,66 @@ class EventActivity : AppCompatActivity() {
             binding.eventactivityRandomlayout.visibility = View.VISIBLE
         }
     }
+
+    fun getRandomHour(hourLowerLimit: Int, hourHigherLimit: Int): Int {
+        // Ensure the limits are within 1 to 12
+        require(hourLowerLimit in 1..12) { "hourLowerLimit must be between 1 and 12." }
+        require(hourHigherLimit in 1..12) { "hourHigherLimit must be between 1 and 12." }
+
+        // Enforce that the lower limit is less than or equal to the upper limit
+        require(hourLowerLimit < hourHigherLimit) {
+            "hourLowerLimit must be less than or equal to hourHigherLimit."
+        }
+
+        // Generate a random number within the valid range
+        return Random.nextInt(hourLowerLimit, hourHigherLimit + 1)
+    }
+
+    private fun validateAndGenerateRandomHour(
+        hourLowerLimitText: String?,
+        hourHigherLimitText: String?,
+        context: Context
+    ): Int? {
+        if (hourLowerLimitText.isNullOrEmpty() || hourHigherLimitText.isNullOrEmpty()) {
+            Toast.makeText(context, "Please enter both lower and upper limits.", Toast.LENGTH_SHORT).show()
+            return null
+        }
+
+        val hourLowerLimit: Int
+        val hourHigherLimit: Int
+        try {
+            hourLowerLimit = hourLowerLimitText.toInt()
+            hourHigherLimit = hourHigherLimitText.toInt()
+        } catch (e: NumberFormatException) {
+            Toast.makeText(context, "Invalid number format. Please enter valid integers.", Toast.LENGTH_SHORT).show()
+            return null
+        }
+
+        // Validate the range
+        if (hourLowerLimit !in 1..12 || hourHigherLimit !in 1..12) {
+            Toast.makeText(context, "Limits must be between 1 and 12.", Toast.LENGTH_SHORT).show()
+            return null
+        }
+
+        if (hourLowerLimit >= hourHigherLimit) {
+            Toast.makeText(context, "Lower limit must be less than upper limit.", Toast.LENGTH_SHORT).show()
+            return null
+        }
+
+        // Generate and return a random hour within the range
+        return getRandomHour(hourLowerLimit, hourHigherLimit)
+    }
+
+
+    fun subtractFrom24(randomTime: Int): Int {
+        return 24 - randomTime
+    }
+
+
+
+
+
+
+
+
 }
