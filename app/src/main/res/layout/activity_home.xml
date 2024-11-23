@@ -79,22 +79,22 @@
             android:text="Events which are already created by you in past."
             android:textSize="12sp"/>
 
-
-
-
         <FrameLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:id="@+id/homeactivity_createeventindicator"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone"
             android:layout_gravity="center">
 
             <!-- The ImageView -->
+
+            <!-- The RelativeLayout with TextView overlaying the ImageView -->
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:src="@drawable/createeventindicator"/>
+                android:layout_marginTop="65dp"
+                android:src="@drawable/createeventindicator" />
 
-            <!-- The RelativeLayout with TextView overlaying the ImageView -->
             <RelativeLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -107,55 +107,14 @@
                     android:text="!"
                     android:textStyle="bold"
                     android:layout_centerInParent="true"/>
-
-            </RelativeLayout>
-
-        </FrameLayout>
-
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Drafted Events"
-            android:layout_marginTop="12dp"
-            android:textSize="16sp"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Events which are not fully completed and cannot be exectued."
-            android:textSize="12sp"/>
-
-        <FrameLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center">
-
-            <!-- The ImageView -->
-
-            <ImageView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:src="@drawable/drafteventsindicator"/>
-
-            <!-- The RelativeLayout with TextView overlaying the ImageView -->
-            <RelativeLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="36sp"
-                    android:text="!"
-                    android:textStyle="bold"
-                    android:layout_centerInParent="true"/>
-
-
-
             </RelativeLayout>
         </FrameLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/homeactivity_recyclerview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="6dp"
+            android:padding="4dp"/>
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

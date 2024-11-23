@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Border -->
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@color/backgroundcolor" />
+            <stroke
+                android:width="4dp"
+                android:color="@color/Yellow" />
+            <corners android:radius="8dp" />
+        </shape>
+    </item>
+</layer-list>

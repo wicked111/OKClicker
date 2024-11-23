@@ -281,8 +281,9 @@ class MyAccessibilityService : AccessibilityService() {
                     // Generate a random delay once
                     val delay = randomClickDelaySelector(higherDelay, lowerDelay)
 
+
                     // Perform the click
-                    performClick(x, y)
+                    performClickWithProximity(x, y,20)
 
                     // Increment the elapsed time using the same delay
                     elapsedTime += delay.toLong()
@@ -302,4 +303,46 @@ class MyAccessibilityService : AccessibilityService() {
         require(higherLimitInMs > lowerLimitInMs) {"higherLimitInMs must be greater than lowerLimitInMs"}
         return Random.nextInt(lowerLimitInMs, higherLimitInMs + 1)
     }
+
+    fun performClickWithProximity(x: Int, y: Int, radius: Int) {
+        // Generate random offset within the circle
+        val offset = generateRandomOffsetWithinCircle(radius)
+        val newX = x + offset.first
+        val newY = y + offset.second
+
+        Log.d("performClickWithProximity", "Clicking at coordinates: $newX, $newY")
+
+        val path = Path().apply {
+            moveTo(newX.toFloat(), newY.toFloat())
+        }
+
+        val gestureDescription = GestureDescription.Builder()
+            .addStroke(GestureDescription.StrokeDescription(path, 100, 100)) // Adjusted delay and duration
+            .build()
+
+        dispatchGesture(gestureDescription, object : GestureResultCallback() {
+            override fun onCompleted(gestureDescription: GestureDescription?) {
+                super.onCompleted(gestureDescription)
+                Log.d("performClickWithProximity", "Gesture completed successfully at ($newX, $newY)")
+            }
+
+            override fun onCancelled(gestureDescription: GestureDescription?) {
+                super.onCancelled(gestureDescription)
+                Log.d("performClickWithProximity", "Gesture cancelled")
+            }
+        }, null)
+    }
+
+    // Helper function to generate random offsets within a circle
+    private fun generateRandomOffsetWithinCircle(radius: Int): Pair<Int, Int> {
+        while (true) {
+            val dx = Random.nextInt(-radius, radius + 1)
+            val dy = Random.nextInt(-radius, radius + 1)
+            if (dx * dx + dy * dy <= radius * radius) {
+                return Pair(dx, dy)
+            }
+        }
+    }
+
+
 }

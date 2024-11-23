@@ -40,6 +40,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.gson)
     implementation(libs.github.glide)
     implementation(libs.android.gif.drawable)
     implementation(libs.androidx.core.ktx)
